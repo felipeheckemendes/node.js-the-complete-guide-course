@@ -7,6 +7,8 @@ const shopRoutes = require("./routes/shop.js");
 
 const app = express();
 
+console.log("Starting node from", __dirname);
+console.log("Starting node from", process.cwd());
 // Set templating engine
 app.set("view engine", "ejs");
 app.set("views", "views");
