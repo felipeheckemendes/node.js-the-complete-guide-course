@@ -1,21 +1,4 @@
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
-
-// Promisify the fs.writeFile function
-const writeFileAsync = util.promisify(fs.writeFile);
-
-// Reading data from data-files
-let toursData = fs.readFileSync(path.join(__dirname, '..', 'dev-data', 'data', 'tours-simple.json'));
-toursData = JSON.parse(toursData);
-
-const findTourById = (id, data) => {
-  const tourData = data.find((element) => element.id === +id);
-  if (!tourData) {
-    throw new Error('Invalid ID');
-  }
-  return tourData;
-};
+const Tour = require('../models/tourModel');
 
 const sendErrorResponse = (res, err, code) =>
   res.status(code).json({
@@ -23,36 +6,22 @@ const sendErrorResponse = (res, err, code) =>
     error: err.message,
   });
 
-exports.checkID = (req, res, next, val) => {
+exports.getAllTours = async (req, res) => {
   try {
-    const tourData = toursData.find((element) => element.id === +val);
-    if (!tourData) {
-      throw new Error('Invalid ID');
-    }
-    next();
-  } catch (err) {
-    return sendErrorResponse(res, err, 404);
-  }
-};
-
-exports.getAllTours = (req, res) => {
-  try {
-    if (!toursData) {
-      throw new Error('Tours data not available');
-    }
+    const toursData = await Tour.find();
     res.status(200).json({
       status: 'success',
       results: toursData.length,
       data: { toursData },
     });
   } catch (err) {
-    return sendErrorResponse(res, err, 500);
+    sendErrorResponse(res, req, 404);
   }
 };
 
-exports.getTour = (req, res) => {
+exports.getTour = async (req, res) => {
   try {
-    const tourData = findTourById(req.params.id, toursData);
+    const tourData = await Tour.findById(req.params.id);
     res.status(200).json({
       status: 'success',
       data: { tour: tourData },
@@ -62,24 +31,9 @@ exports.getTour = (req, res) => {
   }
 };
 
-exports.checkBody = async (req, res, next) => {
-  console.log(req.body);
-  try {
-    if (!req.body.name || !req.body.price) {
-      throw new Error('Missing name or price information for new tour');
-    }
-    next();
-  } catch (err) {
-    sendErrorResponse(res, err, 400);
-  }
-};
-
 exports.createTour = async (req, res) => {
   try {
-    const newId = toursData.at(-1).id + 1;
-    const newTour = Object.assign({ id: newId }, req.body);
-    toursData.push(newTour);
-    await writeFileAsync(path.join(__dirname, '..', 'dev-data', 'data', 'tours-simple.json'), JSON.stringify(toursData));
+    const newTour = await Tour.create(req.body);
     res.status(201).json({
       status: 'success',
       data: {
@@ -87,33 +41,36 @@ exports.createTour = async (req, res) => {
       },
     });
   } catch (err) {
-    sendErrorResponse(res, err, 500);
+    sendErrorResponse(res, err, 400);
   }
 };
 
 exports.updateTour = async (req, res) => {
   try {
-    console.log('PATCH requests functionalitgy yet to be implemented...');
-    const tourData = findTourById(req.params.id, toursData);
-    res.status(500).json({
-      status: 'error',
-      data: 'This route is not yet defined',
+    console.log(req.body);
+    const updatedTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: updatedTour,
+      },
     });
   } catch (err) {
-    sendErrorResponse(res, err, 500);
+    sendErrorResponse(res, err, 400);
   }
 };
 
 exports.deleteTour = async (req, res) => {
   try {
-    console.log('DELETE requests functionalitgy yet to be implemented...');
-    console.log(req.params);
-    const tourData = findTourById(req.params.id, toursData);
-    res.status(500).json({
-      status: 'error',
-      data: 'This route is not yet defined',
+    const deletedTour = await Tour.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: 'success',
+      data: null,
     });
   } catch (err) {
-    sendErrorResponse(res, err, 500);
+    sendErrorResponse(res, err, 400);
   }
 };
