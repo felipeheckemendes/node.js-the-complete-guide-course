@@ -4,13 +4,14 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon server.js"
   },
   "keywords": [],
   "author": "Felipe Mendes",
   "license": "MIT",
   "description": "",
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "morgan": "^1.10.0"
   }
 }
