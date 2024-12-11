@@ -47,11 +47,12 @@ const tourSchema = new mongoose.Schema({
     required: [true, 'Tour image required'],
   },
   images: [String],
+  startDates: [Date],
   createdAt: {
     type: Date,
     default: Date.now(),
+    select: false,
   },
-  startDates: [Date],
 });
 
 const Tour = mongoose.model('Tour', tourSchema);

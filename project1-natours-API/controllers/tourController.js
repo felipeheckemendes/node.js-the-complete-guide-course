@@ -8,14 +8,53 @@ const sendErrorResponse = (res, err, code) =>
 
 exports.getAllTours = async (req, res) => {
   try {
-    const toursData = await Tour.find();
+    // 1. Filtering
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
+    const queryObj = { ...req.query };
+    excludedFields.forEach((element) => delete queryObj[element]);
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+    let toursQuery = Tour.find(JSON.parse(queryStr));
+
+    // 2. Sorting
+    if (req.query.sort) {
+      const sortBy = req.query.sort.split(',').join(' ');
+      toursQuery = toursQuery.sort(sortBy);
+    } else {
+      toursQuery = toursQuery.sort('-createdAt _id');
+    }
+
+    // 3. Field limiting
+    if (req.query.fields) {
+      const selectedFields = req.query.fields.split(',').join(' ');
+      toursQuery = toursQuery.select(selectedFields);
+    } else {
+      toursQuery = toursQuery.select('-__v');
+    }
+
+    // 4. Pagination
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 100;
+    const skip = (page - 1) * limit;
+    toursQuery = toursQuery.limit(limit).skip(skip);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+      if (skip >= numTours) throw new Error('This page does not exist');
+    }
+
+    // Await query
+    const toursData = await toursQuery;
+
+    // Send response
     res.status(200).json({
       status: 'success',
       results: toursData.length,
       data: { toursData },
     });
   } catch (err) {
-    sendErrorResponse(res, req, 404);
+    sendErrorResponse(res, err, 404);
   }
 };
 
