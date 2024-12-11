@@ -5,14 +5,22 @@ const router = express.Router();
 
 // prettier-ignore
 router
+    .route('/')
+    .get(tourController.getAllTours)
+    .post(tourController.createTour);
+// prettier-ignore
+router
     .route('/top-5-tours')
     .get(tourController.aliasTopTours)
     .get(tourController.getAllTours)
 // prettier-ignore
 router
-    .route('/')
-    .get(tourController.getAllTours)
-    .post(tourController.createTour);
+    .route('/tour-stats')
+    .get(tourController.getTourStatistics)
+// prettier-ignore
+router
+    .route('/monthly-plan/:year')
+    .get(tourController.getMonthlyPlan)
 // prettier-ignore
 router
     .route('/:id')
