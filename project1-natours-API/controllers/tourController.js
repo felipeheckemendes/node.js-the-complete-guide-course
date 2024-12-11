@@ -6,7 +6,16 @@ const sendErrorResponse = (res, err, code) =>
     error: err.message,
   });
 
+exports.aliasTopTours = (req, res, next) => {
+  console.log('HERE WE ARE ');
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  console.log(req.query);
+  next();
+};
+
 exports.getAllTours = async (req, res) => {
+  console.log('Is the request updated?', req.query);
   try {
     // 1. Filtering
     const excludedFields = ['page', 'sort', 'limit', 'fields'];

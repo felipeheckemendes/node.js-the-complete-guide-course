@@ -5,6 +5,11 @@ const router = express.Router();
 
 // prettier-ignore
 router
+    .route('/top-5-tours')
+    .get(tourController.aliasTopTours)
+    .get(tourController.getAllTours)
+// prettier-ignore
+router
     .route('/')
     .get(tourController.getAllTours)
     .post(tourController.createTour);
