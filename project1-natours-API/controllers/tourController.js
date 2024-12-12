@@ -10,19 +10,15 @@ const sendErrorResponse = (res, err, code) => {
 };
 
 exports.aliasTopTours = (req, res, next) => {
-  console.log('HERE WE ARE ');
   req.query.limit = '5';
   req.query.sort = '-ratingsAverage,price';
-  console.log(req.query);
   next();
 };
 
 exports.getAllTours = async (req, res) => {
-  console.log('Is the request updated?', req.query);
   try {
     // Query
     const toursQuery = new APIFeatures(Tour.find(), req.query).filter().sort().limit().pagination();
-    console.log('TOURS QUERY: ', toursQuery);
     const toursData = await toursQuery.query;
 
     // Send response
