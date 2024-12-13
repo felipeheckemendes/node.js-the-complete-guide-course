@@ -1,6 +1,13 @@
+/* eslint-disable no-console */
 const path = require('path');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
+
+process.on('unhandledRejection', (err) => {
+  console.log('\nGLOBAL UNHANDLED REJECTION:\n', err.name, '\n', err.message);
+  console.log('Shutting down...');
+  process.exit(1);
+});
 
 dotenv.config({ path: path.join(__dirname, 'config.env') });
 const app = require('./app'); // The app should be required AFTER configuring the env variables, because requiring runs the file
@@ -19,6 +26,14 @@ mongoose
 
 // Start Server
 const port = process.env.PORT || 3000;
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`App running on port ${port}\n`);
+});
+
+process.on('uncaughtException', (err) => {
+  console.log('\nGLOBAL UNHANDLED REJECTION:\n', err.name, '\n', err.message, '\n');
+  console.log('Shutting down...');
+  server.close(() => {
+    process.exit(1);
+  });
 });
