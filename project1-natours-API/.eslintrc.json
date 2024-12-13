@@ -4,7 +4,7 @@
   "rules": {
     "prettier/prettier": "off",
     "spaced-comment": "off",
-    "no-console": "off",
+    "no-console": "warn",
     "consistent-return": "off",
     "func-names": "off",
     "object-shorthand": "off",
@@ -16,11 +16,12 @@
     "prefer-object-spread": "off",
     "arrow-body-style": "off",
     "prefer-destructuring": ["error", { "object": true, "array": false }],
-    "no-unused-vars": ["off", { "argsIgnorePattern": "req|res|next|val" }]
+    "no-unused-vars": ["off", { "argsIgnorePattern": "req|res|next|val" }],
+    "node/no-unsupported-features/es-syntax": "off"
   },
   "settings": {
     "node": {
-      "version": ">=20.14.0"
+      "version": ">=20.0.0"
     }
   }
 }
