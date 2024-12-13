@@ -1,6 +1,8 @@
 const express = require('express');
 const path = require('path');
 const morgan = require('morgan');
+const AppError = require('./utils/appError');
+const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 
@@ -25,5 +27,11 @@ app.use((req, res, next) => {
 // ROUTES
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+// Handle unrouted urls
+app.all('*', (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+});
+// Error handling middleware
+app.use(globalErrorHandler); // CLASS NOTE: If you pass a function with 4 params to use, it will automatically recognize it as an error handling middleware, and will forward all errors to this middleware.
 
 module.exports = app;
