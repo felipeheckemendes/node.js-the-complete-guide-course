@@ -103,6 +103,7 @@ tourSchema.pre(/^find/, function (next) {
 });
 // Query middleware to log query runtime
 tourSchema.post(/^find/, function (docs, next) {
+  // eslint-disable-next-line no-console
   console.log('Query took', Date.now() - this.start, 'miliseconds');
   // console.log(docs);
   next();
