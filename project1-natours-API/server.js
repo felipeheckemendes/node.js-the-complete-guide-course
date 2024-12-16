@@ -3,6 +3,8 @@ const path = require('path');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 
+// mongoose.set('debug', true);
+
 process.on('unhandledRejection', (err) => {
   console.log('\nGLOBAL UNHANDLED REJECTION:\n', err.name, '\n', err.message);
   console.log('Shutting down...');
