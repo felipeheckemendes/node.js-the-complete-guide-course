@@ -37,9 +37,17 @@ const handleDuplicateFieldsDB = (err) => {
 };
 
 const handleValidationErrorDB = (err) => {
-  errors = Object.values(err.errors).map((el) => el.message);
+  const errors = Object.values(err.errors).map((el) => el.message);
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, err.statusCode);
+};
+
+const handleJsonWebTokenError = () => {
+  return new AppError('Invalid Token. Please log in again.', 401);
+};
+
+const handleJWTExpiredError = () => {
+  return new AppError('Token Expired. Please log in again.', 401);
 };
 
 module.exports = (err, req, res, next) => {
@@ -48,7 +56,7 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    console.log(err);
+    console.error('>>>', err);
     let error = err;
     if (err.name === 'CastError') {
       // Handle cast error (mongoose) to display meaningful message
@@ -61,6 +69,12 @@ module.exports = (err, req, res, next) => {
     if (err.name === 'ValidationError') {
       // Handle validation error (mongoose)
       error = handleValidationErrorDB(err);
+    }
+    if (err.name === 'JsonWebTokenError') {
+      error = handleJsonWebTokenError(err);
+    }
+    if (err.name === 'TokenExpiredError') {
+      error = handleJWTExpiredError(err);
     }
     sendErrorProd(error, res);
   }

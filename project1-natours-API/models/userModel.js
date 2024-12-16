@@ -38,6 +38,12 @@ const userSchema = new mongoose.Schema(
       },
       select: false,
     },
+    passwordChangedAt: Date,
+    role: {
+      type: String,
+      enum: ['user', 'guide', 'lead-guide', 'admin'],
+      default: 'user',
+    },
   },
   {
     toJSON: { virtuals: true },
@@ -49,8 +55,13 @@ userSchema.methods.checkPassword = async function (candidatePassword, userPasswo
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-const User = mongoose.model('User', userSchema);
-module.exports = User;
+userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    const changedTimestamp = parseInt(this.passwordChangedAt.getTime() / 1000, 10);
+    return JWTTimestamp < changedTimestamp;
+  }
+  return false;
+};
 
 // Password encryptioion middleware
 userSchema.pre('save', async function (req, res, next) {
@@ -60,3 +71,6 @@ userSchema.pre('save', async function (req, res, next) {
   this.passwordConfirm = undefined; // Clear password confirmation after validating
   next();
 });
+
+const User = mongoose.model('User', userSchema);
+module.exports = User;
