@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 // mongoose.set('debug', true);
 
 process.on('unhandledRejection', (err) => {
-  console.log('\nGLOBAL UNHANDLED REJECTION:\n', err.name, '\n', err.message);
+  console.log('\nGLOBAL UNHANDLED REJECTION:\n', err.name, '\n', err.message, '\n', err);
   console.log('Shutting down...');
   process.exit(1);
 });
