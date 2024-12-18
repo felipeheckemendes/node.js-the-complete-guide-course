@@ -1,5 +1,6 @@
 const catchAsync = require('../utils/catchAsync');
 const Review = require('../models/reviewModel');
+const handlerFactory = require('./handlerFactory');
 
 exports.getReviews = catchAsync(async (req, res, next) => {
   let criteria;
@@ -27,3 +28,5 @@ exports.createReview = catchAsync(async (req, res, next) => {
     data: { review },
   });
 });
+
+exports.deleteReview = handlerFactory.deleteOneById(Review, { requireOwnership: true });
