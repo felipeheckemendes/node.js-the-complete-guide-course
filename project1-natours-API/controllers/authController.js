@@ -6,6 +6,27 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const sendEmail = require('../utils/email');
 
+const createAndSendToken = (user, statusCode, res) => {
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+
+  const cookieOptions = {
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+    httpOnly: true, // This makes it impossible to modifiy the cookie except the browser, to prevent cross site attacks
+  };
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true; // Cookie is sent only on https
+  res.cookie('jwt', token, cookieOptions);
+
+  res.status(statusCode).json({
+    status: 'success',
+    token: token,
+    data: {
+      user,
+    },
+  });
+};
+
 exports.signup = catchAsync(async (req, res, next) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -17,17 +38,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   newUser.password = undefined;
 
-  const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-
-  res.status(201).json({
-    status: 'success',
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createAndSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {
@@ -43,14 +54,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   // 2.1 Check if user has been deleted
   // 3. Send token to user
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-  // 4. Send response to user
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createAndSendToken(user, 201, res);
 });
 
 exports.protect = catchAsync(async (req, res, next) => {
@@ -138,14 +142,7 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   await user.save();
   // Log in the user (send jwt)
   // Send token to user
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-  // Send response to user
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createAndSendToken(user, 200, res);
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
@@ -160,12 +157,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // Update changedPasswordAt property
   user.changedPasswordAfter = Date.now() - 1000;
   await user.save();
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES_IN,
-  });
-  // Log user in sending JWT
-  res.status(200).json({
-    status: 'success',
-    token,
-  });
+  createAndSendToken(user, 200, res);
 });
