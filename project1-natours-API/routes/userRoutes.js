@@ -39,9 +39,7 @@ router
     .delete(authController.protect, userController.deleteUser);
 
 // // prettier-ignore
-// router
-//     .route('/')
-//     .get(userController.getAllUsers)
+router.route('/').get(userController.getAllUsers);
 //     .post(userController.createUser)
 
 // // prettier-ignore

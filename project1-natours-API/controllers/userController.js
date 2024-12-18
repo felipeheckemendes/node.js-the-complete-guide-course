@@ -25,21 +25,21 @@ exports.updateUserData = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user._id, { active: false,  });
+  await User.findByIdAndUpdate(req.user._id, { active: false });
   res.status(204).json({
     status: 'success',
     data: null,
   });
 });
 
-// exports.getAllUsers = catchAsync(async (req, res) => {
-//   const users = await User.find();
+exports.getAllUsers = catchAsync(async (req, res) => {
+  const users = await User.find();
 
-//   res.status(201).json({
-//     status: 'success',
-//     data: users,
-//   });
-// });
+  res.status(201).json({
+    status: 'success',
+    data: users,
+  });
+});
 
 // exports.createUser = (req, res) => {
 //   res.status(500).json({
