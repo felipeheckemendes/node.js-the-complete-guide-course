@@ -111,6 +111,7 @@ exports.getAll = (Model, populateOptions = []) =>
 
     res.status(200).json({
       status: 'success',
+      results: docs.length,
       data: {
         data: docs,
       },

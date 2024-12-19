@@ -10,19 +10,22 @@ router.use('/:tourId/reviews', reviewRouter);
 
 const allowedFields = [
   'name',
-  'imageCover',
-  'images',
-  'price',
-  'difficulty',
   'duration',
+  'maxGroupSize',
+  'difficulty',
+  'price',
+  'discount',
   'summary',
   'description',
-  'maxGroupSize',
-  'secretTour',
-  'tourGuides',
+  'imageCover',
+  'images',
   'startDates',
+  'secretTour',
   'startLocation',
   'locations',
+  'tourGuides',
+  'secretTour',
+  'startDates',
 ];
 
 // prettier-ignore
@@ -42,11 +45,11 @@ router
 // prettier-ignore
 router
     .route('/tour-stats')
-    .get(authController.protect, authController.restrictTo(['admin', 'lead-guide']), tourController.getTourStatistics)
+    .get(authController.protect, authController.restrictTo('admin', 'lead-guide'), tourController.getTourStatistics)
 // prettier-ignore
 router
     .route('/monthly-plan/:year')
-    .get(authController.protect, authController.restrictTo(['admin', 'lead-guide', 'guide']), tourController.getMonthlyPlan)
+    .get(authController.protect, authController.restrictTo('admin', 'lead-guide', 'guide'), tourController.getMonthlyPlan)
 // prettier-ignore
 router
     .route('/tours-within/:distance/center/:latlng/unit/:unit')

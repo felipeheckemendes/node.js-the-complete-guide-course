@@ -48,12 +48,12 @@ const tourSchema = new mongoose.Schema(
     },
     discount: {
       type: Number,
-      validate: {
-        validator: function (val) {
-          return val < this.price;
-        },
-        message: 'Discount price ({VALUE}) should be the less than the price',
-      },
+      // validate: {
+      //   validator: function (val) {
+      //     return val < this.price;
+      //   },
+      //   message: `Discount price ({VALUE}) should be the less than the regular price ${this.price}`,
+      // },
     },
     summary: {
       type: String,
@@ -158,7 +158,7 @@ tourSchema.pre('aggregate', function (next) {
   if (!this._pipeline[0].$geoNear) {
     this._pipeline.unshift({ $secretTour: { $ne: true } });
   }
-  console.log(this._pipeline);
+  // console.log(this._pipeline);
   next();
 });
 
