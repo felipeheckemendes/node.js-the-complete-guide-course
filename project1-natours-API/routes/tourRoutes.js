@@ -50,7 +50,11 @@ router
 // prettier-ignore
 router
     .route('/tours-within/:distance/center/:latlng/unit/:unit')
-    .get(authController.protect, tourController.getToursWithin)
+    .get(tourController.getToursWithin)
+// prettier-ignore
+router
+    .route('/toursDistances/:latlng/unit/:unit')
+    .get(tourController.getToursDistance)
 // prettier-ignore
 router
     .route('/:id')
