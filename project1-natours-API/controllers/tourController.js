@@ -39,46 +39,10 @@ exports.getTour = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.createTour = catchAsync(async (req, res, next) => {
-  const newTour = await Tour.create(req.body);
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: newTour,
-    },
-  });
-});
+exports.createTour = handlerFactory.createOne(Tour);
 
-exports.updateTour = catchAsync(async (req, res, next) => {
-  const updatedTour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+exports.updateTour = handlerFactory.updateOneById(Tour, { requireOwnership: false });
 
-  if (!updatedTour) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-
-  res.status(201).json({
-    status: 'success',
-    data: {
-      tour: updatedTour,
-    },
-  });
-});
-
-// exports.deleteTour = catchAsync(async (req, res, next) => {
-//   const deletedTour = await Tour.findByIdAndDelete(req.params.id);
-
-//   if (!deletedTour) {
-//     return next(new AppError('No tour found with that ID', 404));
-//   }
-
-//   res.status(204).json({
-//     status: 'success',
-//     data: null,
-//   });
-// });
 exports.deleteTour = handlerFactory.deleteOneById(Tour, { requireOwnership: false });
 
 exports.getTourStatistics = catchAsync(async (req, res, next) => {

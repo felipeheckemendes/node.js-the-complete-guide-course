@@ -50,7 +50,6 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2. Check if the user exists & password is correct
   const user = await User.findOne({ email: email }).select('+password');
   if (!user || !(await user.checkPassword(password, user.password))) {
-    console.log(user);
     return next(new AppError('Incorrect email or password', 401));
   }
   // 2.1 Check if user has been deleted
@@ -159,4 +158,34 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   user.changedPasswordAfter = Date.now() - 1000;
   await user.save();
   createAndSendToken(user, 200, res);
+});
+
+exports.updateUserData = catchAsync(async (req, res, next) => {
+  // Get the user from collection
+  const user = await User.findById(req.user._id).select('+password');
+  // Check if posted current password is correct
+  if (!req.body.password || !user.checkPassword(req.body.password, user.password))
+    return next(new AppError('The current password provided is wrong. Please try again.', 401));
+  // If so, update the fields
+  user.name = req.body.name;
+  user.email = req.body.email;
+  user.photo = req.body.photo;
+  await user.save();
+
+  const sanitizedUser = user.toObject();
+  delete sanitizedUser.password;
+
+  // Send back response with updated User
+  res.status(200).json({
+    status: 'success',
+    user: sanitizedUser,
+  });
+});
+
+exports.deleteUser = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+  res.status(204).json({
+    status: 'success',
+    data: null,
+  });
 });

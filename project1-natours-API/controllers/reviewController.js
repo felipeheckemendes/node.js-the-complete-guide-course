@@ -30,3 +30,5 @@ exports.createReview = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteReview = handlerFactory.deleteOneById(Review, { requireOwnership: true });
+
+exports.updateReview = handlerFactory.updateOneById(Review, { requireOwnership: true });
