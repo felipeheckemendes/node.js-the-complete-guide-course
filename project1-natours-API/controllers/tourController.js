@@ -96,3 +96,24 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     data: { toursByMonth },
   });
 });
+
+exports.getToursWithin = catchAsync(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(',');
+  if (!lat || !lng)
+    next(
+      new AppError(
+        'Latitude and longitude not specified correctly. Please provide in the format lat,lng',
+        400,
+      ),
+    );
+  const radius = unit === 'mi' ? distance / 3963.2 : distance / 6378.1;
+  const tours = await Tour.find({
+    startLocation: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+  res.status(200).json({
+    status: 'success',
+    results: tours.length,
+    data: tours,
+  });
+});

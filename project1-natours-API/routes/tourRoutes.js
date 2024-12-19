@@ -49,6 +49,10 @@ router
     .get(authController.protect, authController.restrictTo(['admin', 'lead-guide', 'guide']), tourController.getMonthlyPlan)
 // prettier-ignore
 router
+    .route('/tours-within/:distance/center/:latlng/unit/:unit')
+    .get(authController.protect, tourController.getToursWithin)
+// prettier-ignore
+router
     .route('/:id')
     .get(tourController.getTour)
     .patch(
