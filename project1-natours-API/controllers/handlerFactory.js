@@ -63,7 +63,7 @@ exports.updateOneById = (Model, options = {}) =>
 
 exports.createOne = (Model, options = {}) =>
   catchAsync(async (req, res, next) => {
-    const doc = Model.create(req.body);
+    const doc = await Model.create(req.body);
     res.status(201).json({
       status: 'success',
       data: {
