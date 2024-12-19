@@ -14,6 +14,7 @@ router
 // prettier-ignore
 router
     .route('/:id')
+    .get(authController.protect, reviewController.getReview)
     .delete(authController.protect, reviewController.deleteReview)
     .patch(authController.protect, sanitizeRequestBody(['reviewText', 'rating']), reviewController.updateReview)
 

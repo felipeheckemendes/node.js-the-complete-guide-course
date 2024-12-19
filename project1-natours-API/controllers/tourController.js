@@ -10,34 +10,15 @@ exports.aliasTopTours = (req, res, next) => {
   next();
 };
 
-exports.getAllTours = catchAsync(async (req, res, next) => {
-  // Query
-  const toursQuery = new APIFeatures(Tour.find(), req.query).filter().sort().limit().pagination();
-  const toursData = await toursQuery.query;
+exports.getAllTours = handlerFactory.getAll(Tour);
 
-  // Send response
-  res.status(200).json({
-    status: 'success',
-    results: toursData.length,
-    data: { toursData },
-  });
-});
-
-exports.getTour = catchAsync(async (req, res, next) => {
-  const tourData = await Tour.findById(req.params.id)
-    .populate({
-      path: 'tourGuides',
-      select: '-__v -passwordpasswordResetExpires -passwordResetToken -passwordResetExpires',
-    })
-    .populate('reviews');
-  if (!tourData) {
-    return next(new AppError('No tour found with that ID', 404));
-  }
-  res.status(200).json({
-    status: 'success',
-    data: { tour: tourData },
-  });
-});
+exports.getTour = handlerFactory.getOneById(Tour, [
+  {
+    path: 'tourGuides',
+    select: '-__v -passwordpasswordResetExpires -passwordResetToken -passwordResetExpires',
+  },
+  { path: 'reviews' },
+]);
 
 exports.createTour = handlerFactory.createOne(Tour);
 

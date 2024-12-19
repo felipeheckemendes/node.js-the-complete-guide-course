@@ -10,7 +10,7 @@ router.route('/')
 
 // prettier-ignore
 router
-  .route('/id:')
+  .route('/:id')
   .get(authController.protect, authController.restrictTo('admin'), userController.getUser)
   .patch(authController.protect, authController.restrictTo('admin'), userController.updateUser)
   .delete(authController.protect, authController.restrictTo('admin'), userController.deleteUser);

@@ -39,7 +39,6 @@ router
 router
     .route('/top-5-tours')
     .get(authController.protect, tourController.aliasTopTours)
-    .get(authController.protect, tourController.getAllTours)
 // prettier-ignore
 router
     .route('/tour-stats')
