@@ -154,11 +154,22 @@ tourSchema.post(/^find/, function (docs, next) {
 });
 
 // Aggregate middleware
+// tourSchema.pre('aggregate', function (next) {
+//   if (!this._pipeline[0].$geoNear) {
+//     this._pipeline.unshift({ secretTour: { $ne: true } });
+//   }
+//   // console.log(this._pipeline);
+//   next();
+// });
 tourSchema.pre('aggregate', function (next) {
-  if (!this._pipeline[0].$geoNear) {
-    this._pipeline.unshift({ $secretTour: { $ne: true } });
+  // Check if the first stage is $geoNear
+  if (this.pipeline()[0]?.$geoNear) {
+    // Append the $match stage after $geoNear
+    this.pipeline().splice(1, 0, { $match: { secretTour: { $ne: true } } });
+  } else {
+    // Otherwise, add $match at the beginning
+    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
   }
-  // console.log(this._pipeline);
   next();
 });
 
