@@ -36,6 +36,11 @@ router
 // prettier-ignore
 router
     .route('/deleteUser')
-    .delete(authController.protect, authController.deleteUser);
+    .delete(authController.protect, authController.softDeleteUser);
+
+// prettier-ignore
+router
+    .route('/me')
+    .get(authController.protect, authController.getMe);
 
 module.exports = router;

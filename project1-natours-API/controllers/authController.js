@@ -182,10 +182,18 @@ exports.updateUserData = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteUser = catchAsync(async (req, res, next) => {
+exports.softDeleteUser = catchAsync(async (req, res, next) => {
   await User.findByIdAndUpdate(req.user._id, { active: false });
   res.status(204).json({
     status: 'success',
     data: null,
+  });
+});
+
+exports.getMe = catchAsync(async (req, res, next) => {
+  const me = await User.findById(req.user._id);
+  res.status(201).json({
+    status: 'success',
+    data: me,
   });
 });
