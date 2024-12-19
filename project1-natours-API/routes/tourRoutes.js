@@ -28,7 +28,7 @@ const allowedFields = [
 // prettier-ignore
 router
     .route('/')
-    .get(authController.protect, tourController.getAllTours)
+    .get(tourController.getAllTours)
     .post(
         authController.protect, 
         authController.restrictTo(['admin', 'lead-guide']), 
@@ -38,7 +38,7 @@ router
 // prettier-ignore
 router
     .route('/top-5-tours')
-    .get(authController.protect, tourController.aliasTopTours)
+    .get(tourController.aliasTopTours)
 // prettier-ignore
 router
     .route('/tour-stats')
@@ -50,7 +50,7 @@ router
 // prettier-ignore
 router
     .route('/:id')
-    .get(authController.protect, tourController.getTour)
+    .get(tourController.getTour)
     .patch(
         authController.protect, 
         authController.restrictTo('admin', 'lead-guide'), 
