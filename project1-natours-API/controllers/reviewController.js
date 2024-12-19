@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync');
 const Review = require('../models/reviewModel');
 const handlerFactory = require('./handlerFactory');
+const AppError = require('../utils/appError');
 
 exports.createReview = catchAsync(async (req, res, next) => {
   //   Allow nested routes (or manual specification)

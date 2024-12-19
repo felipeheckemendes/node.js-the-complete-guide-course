@@ -46,7 +46,7 @@ router
 // prettier-ignore
 router
     .route('/monthly-plan/:year')
-    .get(authController.protect, authController.restrictTo(['admin', 'lead-guide']), tourController.getMonthlyPlan)
+    .get(authController.protect, authController.restrictTo(['admin', 'lead-guide', 'guide']), tourController.getMonthlyPlan)
 // prettier-ignore
 router
     .route('/:id')

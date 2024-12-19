@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const readline = require('readline');
 const Tour = require('../../models/tourModel');
+const User = require('../../models/userModel');
+const Review = require('../../models/reviewModel');
 
 dotenv.config({ path: path.join(__dirname, '..', '..', 'config.env') });
 // const app = require('../../app'); // The app should be required AFTER configuring the env variables, because requiring runs the file
@@ -21,12 +23,16 @@ mongoose
   });
 
 // Read JSON file
-const fileData = fs.readFileSync(path.join(__dirname, 'tours.json'), 'utf-8');
+const toursData = fs.readFileSync(path.join(__dirname, 'tours.json'), 'utf-8');
+const usersData = fs.readFileSync(path.join(__dirname, 'users.json'), 'utf-8');
+const reviewsData = fs.readFileSync(path.join(__dirname, 'reviews.json'), 'utf-8');
 
 // Function to import data into DB
 const importData = async () => {
   try {
-    await Tour.create(JSON.parse(fileData));
+    await Tour.create(JSON.parse(toursData));
+    await User.create(JSON.parse(usersData), { validateBeforeSave: false });
+    await Review.create(JSON.parse(reviewsData));
     console.log('✅ Data Successfully loaded');
   } catch (err) {
     console.log('🧨 ERROR', err.message);
@@ -38,6 +44,7 @@ const importData = async () => {
 const deleteData = async () => {
   try {
     await Tour.deleteMany();
+    await Review.deleteMany();
     console.log('⭕ Data succesfully deleted');
   } catch (err) {
     console.log(err);
